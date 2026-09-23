@@ -1,0 +1,26 @@
+.app-shell {
+  min-height: 100vh;
+  padding: 48px 20px 72px;
+  background: linear-gradient(135deg, #f4f7ff 0%, #eef9f5 100%);
+  color: #10213a;
+}
+
+.topbar {
+  max-width: 960px;
+  margin: 0 auto 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5a67d8;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.1;
+}
