@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+const STORAGE_KEY = 'tugas-wst-todos'
 
 const initialTodos = [
   { id: 1, text: 'Membuat struktur fitur React', done: true },
@@ -7,7 +9,22 @@ const initialTodos = [
 ]
 
 export function useTodos() {
-  const [todos, setTodos] = useState(initialTodos)
+  const [todos, setTodos] = useState(() => {
+    const storedTodos = localStorage.getItem(STORAGE_KEY)
+
+    if (!storedTodos) return initialTodos
+
+    try {
+      const parsedTodos = JSON.parse(storedTodos)
+      return Array.isArray(parsedTodos) ? parsedTodos : initialTodos
+    } catch {
+      return initialTodos
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+  }, [todos])
 
   const stats = useMemo(
     () => ({
