@@ -9,12 +9,13 @@ const initialTodos = [
 
 export function useTodos() {
   const [todos, setTodos] = useState(() => {
-    const savedTodos = localStorage.getItem(STORAGE_KEY)
+    const storedTodos = localStorage.getItem(STORAGE_KEY)
 
-    if (!savedTodos) return initialTodos
+    if (!storedTodos) return initialTodos
 
     try {
-      return JSON.parse(savedTodos)
+      const parsedTodos = JSON.parse(storedTodos)
+      return Array.isArray(parsedTodos) ? parsedTodos : initialTodos
     } catch {
       return initialTodos
     }
