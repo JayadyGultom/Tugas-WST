@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 
-const STORAGE_KEY = 'tugas-wst-todos'
-
 const STORAGE_KEY = 'tugas-wst.todos'
 const initialTodos = [
   { id: 1, text: 'Membuat struktur fitur React', done: true },
