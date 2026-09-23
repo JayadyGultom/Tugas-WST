@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 const STORAGE_KEY = 'tugas-wst-todos'
 
+const STORAGE_KEY = 'tugas-wst.todos'
 const initialTodos = [
   { id: 1, text: 'Membuat struktur fitur React', done: true },
   { id: 2, text: 'Menyusun komponen feature', done: false },
@@ -61,5 +62,9 @@ export function useTodos() {
     setTodos((prev) => prev.filter((todo) => todo.id !== id))
   }
 
-  return { todos, stats, addTodo, toggleTodo, removeTodo }
+  const clearCompleted = () => {
+    setTodos((prev) => prev.filter((todo) => !todo.done))
+  }
+
+  return { todos, stats, addTodo, toggleTodo, removeTodo, clearCompleted }
 }
