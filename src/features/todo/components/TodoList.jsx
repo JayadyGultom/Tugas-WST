@@ -1,18 +1,28 @@
-function formatFileSize(bytes) {
-  if (!bytes) return '0 B'
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
+import {
+  ensureCorrectDataUrl,
+  formatFileSize,
+  isImageFile,
+} from '../utils/fileUtils'
 
-export function TodoList({ todos, onToggle, onRemove }) {
+export function TodoList({ todos, onToggle, onRemove, onPreview }) {
   return (
     <ul className="todo-list">
       {todos.length === 0 ? (
         <li className="todo-empty">Belum ada tugas yang dibuat.</li>
       ) : (
         todos.map((todo) => {
-          const isImage = todo.file?.type?.startsWith('image/')
+          const file = todo.file
+            ? {
+                ...todo.file,
+                dataUrl: ensureCorrectDataUrl(
+                  todo.file.dataUrl,
+                  todo.file.name,
+                  todo.file.type,
+                ),
+              }
+            : null
+
+          const isImage = isImageFile(file)
 
           return (
             <li key={todo.id} className={`todo-item ${todo.done ? 'done' : ''}`}>
@@ -26,26 +36,56 @@ export function TodoList({ todos, onToggle, onRemove }) {
                   <span>{todo.text}</span>
                 </label>
 
-                {todo.file && (
+                {file && (
                   <div className="todo-attachment">
                     {isImage ? (
                       <div className="attachment-image-card">
-                        <img
-                          src={todo.file.dataUrl}
-                          alt={todo.file.name}
-                          className="attachment-thumb"
-                        />
+                        <div
+                          className="attachment-thumb-wrapper"
+                          onClick={() => onPreview && onPreview(file)}
+                          title="Klik untuk memperbesar gambar"
+                        >
+                          <img
+                            src={file.dataUrl}
+                            alt={file.name}
+                            className="attachment-thumb"
+                          />
+                          <span className="thumb-zoom-hint" aria-hidden="true">
+                            🔍
+                          </span>
+                        </div>
+
                         <div className="attachment-meta">
-                          <span className="attachment-name" title={todo.file.name}>
-                            {todo.file.name}
-                          </span>
+                          <div className="attachment-title-row">
+                            <span
+                              className="attachment-name clickable"
+                              title={file.name}
+                              onClick={() => onPreview && onPreview(file)}
+                            >
+                              {file.name}
+                            </span>
+                            <span className="file-type-tag image-tag">Gambar</span>
+                          </div>
                           <span className="attachment-size">
-                            {formatFileSize(todo.file.size)}
+                            {formatFileSize(file.size)}
                           </span>
+                        </div>
+
+                        <div className="attachment-actions-group">
+                          {onPreview && (
+                            <button
+                              type="button"
+                              className="attachment-action preview-btn"
+                              onClick={() => onPreview(file)}
+                              title="Lihat gambar penuh"
+                            >
+                              👁 Lihat
+                            </button>
+                          )}
                           <a
-                            href={todo.file.dataUrl}
-                            download={todo.file.name}
-                            className="attachment-action"
+                            href={file.dataUrl}
+                            download={file.name}
+                            className="attachment-action download-btn"
                             title="Unduh gambar"
                           >
                             ⬇ Unduh
@@ -54,25 +94,51 @@ export function TodoList({ todos, onToggle, onRemove }) {
                       </div>
                     ) : (
                       <div className="attachment-doc-card">
-                        <span className="attachment-icon" aria-hidden="true">
+                        <span
+                          className="attachment-icon clickable"
+                          aria-hidden="true"
+                          onClick={() => onPreview && onPreview(file)}
+                          title="Klik untuk pratinjau dokumen"
+                        >
                           📄
                         </span>
+
                         <div className="attachment-meta">
-                          <span className="attachment-name" title={todo.file.name}>
-                            {todo.file.name}
-                          </span>
+                          <div className="attachment-title-row">
+                            <span
+                              className="attachment-name clickable"
+                              title={file.name}
+                              onClick={() => onPreview && onPreview(file)}
+                            >
+                              {file.name}
+                            </span>
+                            <span className="file-type-tag doc-tag">Dokumen</span>
+                          </div>
                           <span className="attachment-size">
-                            {formatFileSize(todo.file.size)}
+                            {formatFileSize(file.size)}
                           </span>
                         </div>
-                        <a
-                          href={todo.file.dataUrl}
-                          download={todo.file.name}
-                          className="attachment-action"
-                          title="Unduh file"
-                        >
-                          ⬇ Unduh
-                        </a>
+
+                        <div className="attachment-actions-group">
+                          {onPreview && (
+                            <button
+                              type="button"
+                              className="attachment-action preview-btn"
+                              onClick={() => onPreview(file)}
+                              title="Lihat dokumen"
+                            >
+                              👁 Lihat
+                            </button>
+                          )}
+                          <a
+                            href={file.dataUrl}
+                            download={file.name}
+                            className="attachment-action download-btn"
+                            title="Unduh file"
+                          >
+                            ⬇ Unduh
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>
