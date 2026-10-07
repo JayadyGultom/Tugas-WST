@@ -22,7 +22,11 @@ export function useTodos() {
   })
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+    } catch (error) {
+      console.error('Gagal menyimpan data ke localStorage:', error)
+    }
   }, [todos])
 
   const stats = useMemo(
@@ -34,7 +38,7 @@ export function useTodos() {
     [todos],
   )
 
-  const addTodo = (text) => {
+  const addTodo = (text, file = null) => {
     const trimmed = text.trim()
     if (!trimmed) return
 
@@ -44,6 +48,7 @@ export function useTodos() {
         id: Date.now(),
         text: trimmed,
         done: false,
+        file: file || null,
       },
     ])
   }

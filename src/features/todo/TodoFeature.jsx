@@ -3,10 +3,12 @@ import { useTodos } from './hooks/useTodos'
 import { TodoForm } from './components/TodoForm'
 import { TodoFilters } from './components/TodoFilters'
 import { TodoList } from './components/TodoList'
+import { FilePreviewModal } from './components/FilePreviewModal'
 import './TodoFeature.css'
 
 export function TodoFeature() {
   const [activeFilter, setActiveFilter] = useState('all')
+  const [previewFile, setPreviewFile] = useState(null)
   const { todos, stats, addTodo, toggleTodo, removeTodo, clearCompleted } = useTodos()
   const visibleTodos = useMemo(() => {
     if (activeFilter === 'active') return todos.filter((todo) => !todo.done)
@@ -28,7 +30,7 @@ export function TodoFeature() {
           </div>
         </div>
 
-        <TodoForm onAdd={addTodo} />
+        <TodoForm onAdd={addTodo} onPreview={setPreviewFile} />
 
         <div className="summary">
           <span>Total: {stats.total}</span>
@@ -48,8 +50,20 @@ export function TodoFeature() {
           </button>
         </div>
 
-        <TodoList todos={visibleTodos} onToggle={toggleTodo} onRemove={removeTodo} />
+        <TodoList
+          todos={visibleTodos}
+          onToggle={toggleTodo}
+          onRemove={removeTodo}
+          onPreview={setPreviewFile}
+        />
       </section>
+
+      {previewFile && (
+        <FilePreviewModal
+          file={previewFile}
+          onClose={() => setPreviewFile(null)}
+        />
+      )}
     </main>
   )
 }
